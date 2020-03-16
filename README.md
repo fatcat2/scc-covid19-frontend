@@ -1,3 +1,9 @@
+# scc-covid19-frontend
+
+This Git repository contains the frontend for the scc-covid19 repository. It was made as an effort to stave off cabin fever. Its author is trying its best.
+
+Uses `victory` and `antd`.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
