@@ -1,35 +1,38 @@
 import React, {useEffect, useState } from 'react';
 import './App.css';
-import { Layout, Typography, Row, Col } from 'antd';
+import { Layout, Typography, Row, Col, Statistic } from 'antd';
 import {VictoryVoronoiContainer, VictoryChart, VictoryTheme, VictoryAxis, VictoryTooltip, VictoryLine } from 'victory';
 import axios from 'axios';
+import CountUp from "countup";
+
 const { Title, Paragraph, Text } = Typography;
 const { Header, Content, Footer } = Layout;
 
+
 const sampleData = [
   {date: new Date(Date.parse("2020-01-31")), cases: 1, label: 18},
-  // {date: new Date(Date.parse("2020-02-02")), new_cases: 2, label: 18},
-  // {date: new Date(Date.parse("2020-02-28")), new_cases: 3, label: 18},
-  // {date: new Date(Date.parse("2020-02-29")), new_cases: 4, label: 18},
-  // {date: new Date(Date.parse("2020-03-01")), new_cases: 7, label: 18},
-  // {date: new Date(Date.parse("2020-03-02")), new_cases: 9, label: 18},
-  // {date: new Date(Date.parse("2020-03-03")), new_cases: 11, label: 18},
-  // {date: new Date(Date.parse("2020-03-04")), new_cases: 14, label: 18},
-  // {date: new Date(Date.parse("2020-03-05")), new_cases: 20, label: 18},
-  // {date: new Date(Date.parse("2020-03-06")), new_cases: 24, label: 18},
-  // {date: new Date(Date.parse("2020-03-07")), new_cases: 32, label: 18},
-  // {date: new Date(Date.parse("2020-03-08")), new_cases: 37, label: 18},
-  // {date: new Date(Date.parse("2020-03-09")), new_cases: 43, label: 18},
-  // {date: new Date(Date.parse("2020-03-10")), new_cases: 45, label: 18},
-  // {date: new Date(Date.parse("2020-03-11")), new_cases: 48, label: 18},
-  // {date: new Date(Date.parse("2020-03-12")), new_cases: 66, label: 18},
-  // {date: new Date(Date.parse("2020-03-13")), new_cases: 79, label: 18},
-  // {date: new Date(Date.parse("2020-03-14")), new_cases: 91, label: 18},
-  // {date: new Date(Date.parse("2020-03-15")), new_cases: 114, label: 18},
-  // {date: new Date(Date.parse("2020-03-16")), new_cases: 138, label: 18},
-  // {date: new Date(Date.parse("2020-03-17")), new_cases: 155, label: 18},
-  // {date: new Date(Date.parse("2020-03-18")), new_cases: 175, label: 18},
-  // {date: new Date(Date.parse("2020-03-19")), new_cases: 189, label: 18},
+  {date: new Date(Date.parse("2020-02-02")), cases: 2, label: 18},
+  {date: new Date(Date.parse("2020-02-28")), cases: 3, label: 18},
+  {date: new Date(Date.parse("2020-02-29")), cases: 4, label: 18},
+  {date: new Date(Date.parse("2020-03-01")), cases: 7, label: 18},
+  {date: new Date(Date.parse("2020-03-02")), cases: 9, label: 18},
+  {date: new Date(Date.parse("2020-03-03")), cases: 11, label: 18},
+  {date: new Date(Date.parse("2020-03-04")), cases: 14, label: 18},
+  {date: new Date(Date.parse("2020-03-05")), cases: 20, label: 18},
+  {date: new Date(Date.parse("2020-03-06")), cases: 24, label: 18},
+  {date: new Date(Date.parse("2020-03-07")), cases: 32, label: 18},
+  {date: new Date(Date.parse("2020-03-08")), cases: 37, label: 18},
+  {date: new Date(Date.parse("2020-03-09")), cases: 43, label: 18},
+  {date: new Date(Date.parse("2020-03-10")), cases: 45, label: 18},
+  {date: new Date(Date.parse("2020-03-11")), cases: 48, label: 18},
+  {date: new Date(Date.parse("2020-03-12")), cases: 66, label: 18},
+  {date: new Date(Date.parse("2020-03-13")), cases: 79, label: 18},
+  {date: new Date(Date.parse("2020-03-14")), cases: 91, label: 18},
+  {date: new Date(Date.parse("2020-03-15")), cases: 114, label: 18},
+  {date: new Date(Date.parse("2020-03-16")), cases: 138, label: 18},
+  {date: new Date(Date.parse("2020-03-17")), cases: 155, label: 18},
+  {date: new Date(Date.parse("2020-03-18")), cases: 175, label: 18},
+  {date: new Date(Date.parse("2020-03-19")), cases: 189, label: 18},
 ];
 
 Date.prototype.addDays = function(days) {
@@ -46,6 +49,23 @@ function getDates(startDate, stopDate) {
       currentDate = currentDate.addDays(5);
   }
   return dateArray;
+}
+
+function TotalStatistic(props){
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    axios.get("/data/total")
+    .then((res) => {
+      setCount(res.data["total"])
+    });
+  }, [])
+
+  return (
+    <div class="total-statistic">
+      <p>There are currently {count} total confirmed cases of COVID-19 in Santa Clara County.</p>
+    </div>
+  )
 }
 
 function CenterContent(props){
@@ -78,34 +98,35 @@ function CenterContent(props){
   }, []);
 
   return (
-    <VictoryChart
-      theme={VictoryTheme.material}
-      containerComponent={
-        <VictoryVoronoiContainer/>
-      }
-    >
-      <VictoryLine
-        style={{
-          data: { stroke: "#c43a31" },
-          parent: { border: "1px solid #ccc"}
-        }}
-        data={count}
-        x="date"
-        y="cases"
-        labels={({ datum }) => datum.label}
-        labelComponent={<VictoryTooltip/>}
-        size={({ active }) => active ? 5 : 3}
-        animate={{
-          duration: 2000,
-          onLoad: { duration: 1000 }
-        }}
-        // labelComponent={<VictoryTooltip/>}
-      />
-      <VictoryAxis
-        tickValues={date_range}
-        tickFormat={(t) => `${t.getMonth()+1}/${t.getDate()}`}
-      />
-    </VictoryChart>
+    <div class="App-header">
+      <VictoryChart
+        theme={VictoryTheme.material}
+        containerComponent={
+          <VictoryVoronoiContainer/>
+        }
+      >
+        <VictoryLine
+          style={{
+            data: { stroke: "#c43a31" },
+            parent: { border: "1px solid #ccc"}
+          }}
+          data={count}
+          x="date"
+          y="cases"
+          labels={({ datum }) => "asdf"+datum.label.toString()}
+          labelComponent={<VictoryTooltip/>}
+          size={({ active }) => active ? 5 : 3}
+          animate={{
+            duration: 2000,
+            onLoad: { duration: 1000 }
+          }}
+        />
+        <VictoryAxis
+          tickValues={date_range}
+          tickFormat={(t) => `${t.getMonth()+1}/${t.getDate()}`}
+        />
+      </VictoryChart>
+    </div>
   )
 }
 
@@ -115,16 +136,16 @@ function App() {
   return (
     <div className="App-header">
       <Header>
-        <Title>
-          covid-19 @ scc
-        </Title>
+        <div style={{textAlign: "center"}}>
+            <Title>
+              COVID-19 @ Santa Clara County
+            </Title>
+        </div>
       </Header>
       <Content>
         <Row>
-          <Col>
-            <Header level={3}>
-              Number of confirmed cases in Santa Clara County
-            </Header>
+          <Col xs={{span: 24, offset: 2}} s={{span: 24, offset: 2}}>
+            <TotalStatistic/>
             <CenterContent/>
           </Col>
         </Row>
